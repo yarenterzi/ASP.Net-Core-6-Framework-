@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "zVcJSOvHL0gSJYm1rogt4YDskCzNcFTn0RvFVT8G8lg=",
+  "Source": "SignIRApiSql",
+  "BasePath": "_content/SignIRApiSql",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

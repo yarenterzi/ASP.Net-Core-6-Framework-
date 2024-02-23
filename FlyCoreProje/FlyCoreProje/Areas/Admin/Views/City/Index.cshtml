@@ -1,0 +1,206 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<h2>Şehir - Ülke İşlemleri</h2>
+<br />
+
+<button type="button" id="btngetlist" class="btn btn-outline-info">Şehir Listesi</button>
+<button type="button" id="btngetbyid" class="btn btn-outline-primary">Şehir Getir</button>
+<button type="button" id="btnaddcity" class="btn btn-outline-warning">Şehir Ekle</button>
+<button type="button" id="btndeletecity" class="btn btn-outline-danger">Şehir Sil</button>
+<button type="button" id="btnupdatecity" class="btn btn-outline-success">Şehir Güncelle</button>
+
+<br />
+<br />
+
+<div id="citylist">
+    Buraya Şehir Listesi Gelecek
+</div>
+<br />
+<div>
+    <h6>Uçuş bilgisi ara ?</h6>
+    <input type="text" id="txtid" placeholder="✈Şehir ID değerini giriniz" class="form-control" />
+</div>
+<br />
+
+
+
+<div id="destinationlistbyid">
+</div>
+
+<br />
+<div>
+    <h6>+Yeni uçuş ekle </h6>
+    <input type="text" id="txtcity" placeholder="✈Şehir adını giriniz" class="form-control" />
+    <br />
+    <input type="text" id="txtdaynight" placeholder="✈Tarihi giriniz" class="form-control" />
+    <br />
+    <input type="text" id="txtprice" placeholder="✈Fiyat" class="form-control" />
+    <br />
+    <input type="text" id="txtcapacity" placeholder="✈Kapasite sayısı" class="form-control" />
+    <br />
+
+    <input type="text" id="txtıma" placeholder="✈Ana resim yolu" class="form-control" />
+    <br />
+    <input type="text" id="txtdesc" placeholder="✈Başlık yazısını giriniz" class="form-control" />
+    <br />
+    <input type="text" id="txtsta" placeholder="✈Aktifliğini giriniz(True/False)" class="form-control" />
+    <br />
+    <input type="text" id="txtcover" placeholder="✈Resim yolu 1 giriniz" class="form-control" />
+    <br />
+    <input type="text" id="txtdet1" placeholder="✈Üst detay bilgisi " class="form-control" />
+    <br />
+    <input type="text" id="txtdet2" placeholder="✈Alt detay bilgisi" class="form-control" />
+    <br />
+    <input type="text" id="txtıma2" placeholder="✈Resim yolu 2 giriniz" class="form-control" />
+    <br />
+    <input type="text" id="guid1" placeholder="✈Uçuşta Görevli personelin ID'si'" class="form-control" />
+
+</div>
+
+<script>
+    $("#btngetlist").click(function () {
+        $.ajax({
+            contentType: "application/json",
+            dataType: "json",
+            type: "Get",
+            url: "/Admin/City/CityList/",
+            success: function (func) {
+                let w = jQuery.parseJSON(func);
+                console.log(w);
+                let tablehtml = "<table class=table table-bordered> <tr><th> Şehir Adı </th> <th> Tarih </th> <th> Fiyat </th> </tr>";
+                $.each(w, (index, value) => {  
+                tablehtml += `<tr><td>${value.City}</td> <td>${value.Gun}</td> <td> ${value.Price} ₺ </td> </tr>`
+                });
+                tablehtml += "</table>";
+                $("#citylist").html(tablehtml);
+            }
+        });
+    });
+
+    $("#btnaddcity").click(function () {
+        let cityvalues = {
+            City: $("#txtcity").val(),
+            Gun: $("#txtdaynight").val(),
+            Price: $("#txtprice").val(),
+            Capacity: $("#txtcapacity").val(),
+
+            Image: $("#txtıma").val(),
+            Description: $("#txtdesc").val(),
+            Status: $("#txtsta").val(),
+            CoverImage: $("#txtcover").val(),
+            Details1: $("#txtdet1").val(),
+            Details2: $("#txtdet2").val(),
+            Image2: $("#txtıma2").val(),
+            GuideID: $("#guid1").val()
+        };
+
+        $.ajax({
+            type: "post",
+            url: "/Admin/City/AddCityDestination/",
+            data: cityvalues,
+            success: function (func) {
+                let result = jQuery.parseJSON(func);
+                alert("Şehir - Rota Başarılı Bir Şekilde Eklendi");
+            }
+        });
+    });
+
+    $("#btngetbyid").click(x => {
+        let id = $("#txtid").val();
+
+        $.ajax({
+            contentType: "application/json",
+            dataType: "json",
+            type: "Get",
+            url: "/Admin/City/GetById/",
+            data: { DestinationID: id },
+            success: function (fun2) {
+                let result = jQuery.parseJSON(fun2);
+                console.log(result);
+                let htmlstr = `<table class=table table-bordered><tr><th>Şehir Adı</th><th>Tarih</th><th>Fiyatı</th></tr><tr><td>${result.City}</td><td>${result.Gun}</td><td>${result.Price}</td></tr></table>`;
+                $("#destinationlistbyid").html(htmlstr);
+            }
+        });
+    });
+
+    $("#btndeletecity").click(x => {
+        let id = $("#txtcityid").val();
+        $.ajax({
+            url: "/Admin/City/DeleteCity/" + id,
+            type: "post",
+            contentType: "application/json",
+            dataType: "json",
+            success: function (fun3) {
+                alert("Şehir Silindi");
+            }
+        });
+    });
+
+    $("#btnupdatecity").click(function () {
+        let values = {
+            DestinationID: $("#txtcityeditid").val(),
+            City: $("#txtcityname").val(),
+            Gun: $("#txtcitdaynightname").val(),
+
+                    Price: $("#txtcitpricename").val(),
+                    Image: $("#txtcitımagename").val(),
+                    Description: $("#txtcitdescname").val(),
+                    Capacity: $("#txtcitcapaname").val(),
+                    Status: $("#txtcitstatusname").val(),
+                    CoverImage: $("#txtcitcovername").val(),
+                    Details1: $("#txtcitdeta1name").val(),
+                    Details2: $("#txtcitdeta2name").val(),
+                    Image2: $("#txtcitımage2name").val(),
+                        GuideID: $("#guid1").val()
+        };
+
+        $.ajax({
+            type: "post",
+            url: "/Admin/City/UpdateCity/",
+            data: values,
+            success: function (fun4) {
+                alert("Güncelleme İşlemi Yapıldı");
+            }
+        });
+    });
+
+</script>
+<br />
+<div>
+    <h6>-Silinmesi istenen uçuş </h6>
+    <input type="text" id="txtcityid" placeholder="✈Silinecek ID değerini giriniz" class="form-control" />
+</div>
+<br />
+<div>
+    <h6>Güncellenecek uçuş bilgisi ?</h6>
+    <input type="text" id="txtcityeditid" placeholder="✈Güncellenecek ID değerini giriniz" class="form-control" />
+    <br />
+    <input type="text" id="txtcityname" placeholder="✈Güncellenecek şehir değerini giriniz" class="form-control" />
+    <br />
+    <input type="text" id="txtcitdaynightname" placeholder="✈Güncellenecek tarih bilgisini giriniz" class="form-control" />
+    <br />
+
+    <input type="text" id="txtcitpricename" placeholder="✈Güncellenecek fiyat bilgisini giriniz" class="form-control" />
+    <br />
+    <input type="text" id="txtcitımagename" placeholder="✈Güncellenecek resim bilgisini giriniz" class="form-control" />
+    <br />
+    <input type="text" id="txtcitdescname" placeholder="Güncellenecek açıklamayı giriniz" class="form-control" />
+    <br />
+    <input type="text" id="txtcitcapaname" placeholder="✈Güncellenecek uçak kapasitesini giriniz" class="form-control" />
+    <br />
+    <input type="text" id="txtcitstatusname" placeholder="✈Güncellenecek aktiflik durumunu giriniz(True/False)" class="form-control" />
+    <br />
+    <input type="text" id="txtcitcovername" placeholder="✈Güncellenecek diğer resim bilgisini giriniz" class="form-control" />
+    <br />
+    <input type="text" id="txtcitdeta1name" placeholder="✈Güncellenecek üst detay bilgisini giriniz" class="form-control" />
+    <br />
+    <input type="text" id="txtcitdeta2name" placeholder="✈Güncellenecek alt detay bilgisini giriniz" class="form-control" />
+    <br />
+    <input type="text" id="txtcitımage2name" placeholder="✈Güncellenecek diğer resim bilgisini giriniz" class="form-control" />
+
+</div>
